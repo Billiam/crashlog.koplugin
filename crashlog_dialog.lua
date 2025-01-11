@@ -71,7 +71,7 @@ end
 
 function CrashlogDialog:buildTextContainer(text, height)
   local text_widget = ScrollTextWidget:new {
-    face = Font:getFace("cfont", 14),
+    face = Font:getFace("infont", 14),
     text = text,
     width = self.width - Screen:scaleBySize(6),
     height = height,

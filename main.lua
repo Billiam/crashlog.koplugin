@@ -22,7 +22,7 @@ function Crashlog:onDispatcherRegisterActions()
   Dispatcher:registerAction("show_crashlog", {
     category = "none",
     event = "ShowCrashlog",
-    title = _("Hardcover: Link book"),
+    title = _("Show crash.log"),
     general = true,
   })
 end
