@@ -61,13 +61,18 @@ end
 function Crashlog:onShowCrashlog()
   local CrashlogDialog = require("crashlog_dialog")
   local data = self:_loadCrashLog()
-  UIManager:show(CrashlogDialog:new {
+  local dialog = CrashlogDialog:new {
     text = data,
     title = "crash.log",
     refresh_func = function()
       return self:_loadCrashLog(true)
     end
-  })
+  }
+
+  UIManager:show(dialog)
+  UIManager:nextTick(function()
+    UIManager:setDirty(dialog, "ui")
+  end)
 end
 
 return Crashlog
