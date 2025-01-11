@@ -5,6 +5,8 @@ local Font = require("ui/font")
 local Geom = require("ui/geometry")
 local UIManager = require("ui/uimanager")
 
+local ButtonDialog = require("ui/widget/buttondialog")
+local ConfirmBox = require("ui/widget/confirmbox")
 local ScrollTextWidget = require("ui/widget/scrolltextwidget")
 local TitleBar = require("ui/widget/titlebar")
 local ToggleSwitch = require("ui/widget/toggleswitch")
@@ -42,10 +44,9 @@ function CrashlogDialog:init()
   local titlebar = TitleBar:new {
     title = self.title,
     with_bottom_line = true,
-    left_icon = "cre.render.reload",
+    left_icon = "appbar.menu",
     left_icon_tap_callback = function()
-      local new_text = self:getText()
-      self:refreshContainer(new_text)
+      self:showTitlebarDialog()
     end,
     close_callback = function()
       UIManager:close(self)
@@ -150,6 +151,47 @@ function CrashlogDialog:buildTextContainer(text, height)
   text_widget:scrollToBottom()
 
   return text_widget
+end
+
+function CrashlogDialog:showTitlebarDialog()
+  local dialog
+  dialog = ButtonDialog:new {
+    buttons = {
+      { {
+        text = "Refresh logs",
+        callback = function()
+          local new_text = self:getText()
+          self:refreshContainer(new_text)
+
+          UIManager:close(dialog)
+        end
+      } },
+      { {
+        text     = "Clear log file",
+        callback = function()
+          UIManager:show(ConfirmBox:new {
+            text = "Are you sure you want to clear the log file?",
+            ok_callback = function()
+              self:clearLog()
+              UIManager:close(dialog)
+            end,
+          })
+        end
+      } }
+    }
+
+  }
+  UIManager:show(dialog)
+  local new_text = self:getText()
+  self:refreshContainer(new_text)
+end
+
+function CrashlogDialog:clearLog()
+  local result = self.clear_log_func()
+  if result then
+    self.text = ""
+    self:refreshContainer(self.text)
+  end
 end
 
 return CrashlogDialog

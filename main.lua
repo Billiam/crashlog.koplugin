@@ -37,15 +37,19 @@ function Crashlog:addToMainMenu(menu_items)
   }
 end
 
+function Crashlog:getLogPath()
+  local DataStorage = require("datastorage")
+  local log_path = string.format("%s/%s", DataStorage:getDataDir(), "crash.log")
+  return log_path
+end
+
 function Crashlog:_loadCrashLog(force)
   if force then
     self.crashlog_data = nil
   end
 
   if not self.crashlog_data then
-    local DataStorage = require("datastorage")
-    local log_path = string.format("%s/%s", DataStorage:getDataDir(), "crash.log")
-    local file, error = io.open(log_path, "r")
+    local file, error = io.open(self:getLogPath(), "r")
     if file then
       local body = file:read("*a")
       file:close()
@@ -58,6 +62,16 @@ function Crashlog:_loadCrashLog(force)
   return self.crashlog_data
 end
 
+function Crashlog:_clearCrashLog()
+  local file, err = io.open(self:getLogPath(), "w")
+  if file then
+    file:close()
+    return true
+  else
+    logger.err(err)
+  end
+end
+
 function Crashlog:onShowCrashlog()
   local CrashlogDialog = require("crashlog_dialog")
   local data = self:_loadCrashLog()
@@ -66,6 +80,9 @@ function Crashlog:onShowCrashlog()
     title = "crash.log",
     refresh_func = function()
       return self:_loadCrashLog(true)
+    end,
+    clear_log_func = function()
+      return self:_clearCrashLog()
     end
   }
 
