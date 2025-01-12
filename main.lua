@@ -43,29 +43,22 @@ function Crashlog:getLogPath()
   return log_path
 end
 
-function Crashlog:_loadCrashLog(force)
-  if force then
-    self.crashlog_data = nil
+function Crashlog:_loadCrashLog()
+  local file, error = io.open(self:getLogPath(), "r")
+  if file then
+    local body = file:read("*a")
+    file:close()
+    return body
+  else
+    logger.err(error)
   end
-
-  if not self.crashlog_data then
-    local file, error = io.open(self:getLogPath(), "r")
-    if file then
-      local body = file:read("*a")
-      file:close()
-      self.crashlog_data = body
-    else
-      logger.err(error)
-    end
-  end
-
-  return self.crashlog_data
 end
 
 function Crashlog:_clearCrashLog()
   local file, err = io.open(self:getLogPath(), "w")
   if file then
     file:close()
+
     return true
   else
     logger.err(err)
@@ -79,7 +72,7 @@ function Crashlog:onShowCrashlog()
     text = data,
     title = "crash.log",
     refresh_func = function()
-      return self:_loadCrashLog(true)
+      return self:_loadCrashLog()
     end,
     clear_log_func = function()
       return self:_clearCrashLog()
