@@ -166,7 +166,7 @@ function CrashlogDialog:showTitlebarDialog()
         end
       } },
       { {
-        text     = "Clear log file",
+        text = "Clear log file",
         callback = function()
           UIManager:show(ConfirmBox:new {
             text = "Are you sure you want to clear the log file?",
@@ -181,8 +181,6 @@ function CrashlogDialog:showTitlebarDialog()
 
   }
   UIManager:show(dialog)
-  local new_text = self:getText()
-  self:refreshContainer(new_text)
 end
 
 function CrashlogDialog:clearLog()
