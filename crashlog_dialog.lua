@@ -161,9 +161,8 @@ function CrashlogDialog:showTitlebarDialog()
         text = "Refresh logs",
         callback = function()
           local new_text = self:getText()
-          self:refreshContainer(new_text)
-
           UIManager:close(dialog)
+          self:refreshContainer(new_text)
         end
       } },
       { {
